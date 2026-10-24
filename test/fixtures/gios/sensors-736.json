@@ -1,0 +1,216 @@
+{
+  "@context": {
+    "meta": "https://schema.org/meta",
+    "totalPages": "https://schema.org/totalPages",
+    "links": "https://schema.org/links"
+  },
+  "@context": {
+    "Lista stanowisk pomiarowych dla podanej stacji": {
+      "@id": "https://api.gios.gov.pl/pjp-api/v1/rest/station/sensors"
+    },
+    "links": "https://schema.org/relatedLink",
+    "totalPages": "https://schema.org/numberOfPages"
+  },
+  "Lista stanowisk pomiarowych dla podanej stacji": [
+    {
+      "Identyfikator stanowiska": 4755,
+      "Identyfikator stacji": 736,
+      "Wskaźnik": "tlenek węgla",
+      "Wskaźnik - wzór": "CO",
+      "Wskaźnik - kod": "CO",
+      "Id wskaźnika": 8
+    },
+    {
+      "Identyfikator stanowiska": 4757,
+      "Identyfikator stacji": 736,
+      "Wskaźnik": "tlenek azotu",
+      "Wskaźnik - wzór": "NO",
+      "Wskaźnik - kod": "NO",
+      "Id wskaźnika": 16
+    },
+    {
+      "Identyfikator stanowiska": 4758,
+      "Identyfikator stacji": 736,
+      "Wskaźnik": "dwutlenek azotu",
+      "Wskaźnik - wzór": "NO2",
+      "Wskaźnik - kod": "NO2",
+      "Id wskaźnika": 6
+    },
+    {
+      "Identyfikator stanowiska": 4759,
+      "Identyfikator stacji": 736,
+      "Wskaźnik": "tlenki azotu",
+      "Wskaźnik - wzór": "NOx",
+      "Wskaźnik - kod": "NOx",
+      "Id wskaźnika": 7
+    },
+    {
+      "Identyfikator stanowiska": 4760,
+      "Identyfikator stacji": 736,
+      "Wskaźnik": "ozon",
+      "Wskaźnik - wzór": "O3",
+      "Wskaźnik - kod": "O3",
+      "Id wskaźnika": 5
+    },
+    {
+      "Identyfikator stanowiska": 4761,
+      "Identyfikator stacji": 736,
+      "Wskaźnik": "pył zawieszony PM10",
+      "Wskaźnik - wzór": "PM10",
+      "Wskaźnik - kod": "PM10",
+      "Id wskaźnika": 3
+    },
+    {
+      "Identyfikator stanowiska": 4762,
+      "Identyfikator stacji": 736,
+      "Wskaźnik": "pył zawieszony PM2.5",
+      "Wskaźnik - wzór": "PM2.5",
+      "Wskaźnik - kod": "PM2.5",
+      "Id wskaźnika": 69
+    },
+    {
+      "Identyfikator stanowiska": 4764,
+      "Identyfikator stacji": 736,
+      "Wskaźnik": "dwutlenek siarki",
+      "Wskaźnik - wzór": "SO2",
+      "Wskaźnik - kod": "SO2",
+      "Id wskaźnika": 1
+    },
+    {
+      "Identyfikator stanowiska": 4916,
+      "Identyfikator stacji": 736,
+      "Wskaźnik": "benzo(a)piren w PM10",
+      "Wskaźnik - wzór": "BaP(PM10)",
+      "Wskaźnik - kod": "BaP(PM10)",
+      "Id wskaźnika": 61
+    },
+    {
+      "Identyfikator stanowiska": 28366,
+      "Identyfikator stacji": 736,
+      "Wskaźnik": "dibenzo(a,h)antracen w PM10",
+      "Wskaźnik - wzór": "DBahA(PM10)",
+      "Wskaźnik - kod": "DBahA(PM10)",
+      "Id wskaźnika": 63
+    },
+    {
+      "Identyfikator stanowiska": 28367,
+      "Identyfikator stacji": 736,
+      "Wskaźnik": "arsen w PM10",
+      "Wskaźnik - wzór": "As(PM10)",
+      "Wskaźnik - kod": "As(PM10)",
+      "Id wskaźnika": 60
+    },
+    {
+      "Identyfikator stanowiska": 28368,
+      "Identyfikator stacji": 736,
+      "Wskaźnik": "benzo(b)fluoranten w PM10",
+      "Wskaźnik - wzór": "BbF(PM10)",
+      "Wskaźnik - kod": "BbF(PM10)",
+      "Id wskaźnika": 65
+    },
+    {
+      "Identyfikator stanowiska": 28370,
+      "Identyfikator stacji": 736,
+      "Wskaźnik": "benzo(j)fluoranten w PM10",
+      "Wskaźnik - wzór": "BjF(PM10)",
+      "Wskaźnik - kod": "BjF(PM10)",
+      "Id wskaźnika": 68
+    },
+    {
+      "Identyfikator stanowiska": 28371,
+      "Identyfikator stacji": 736,
+      "Wskaźnik": "benzo(k)fluoranten w PM10",
+      "Wskaźnik - wzór": "BkF(PM10)",
+      "Wskaźnik - kod": "BkF(PM10)",
+      "Id wskaźnika": 66
+    },
+    {
+      "Identyfikator stanowiska": 28372,
+      "Identyfikator stacji": 736,
+      "Wskaźnik": "kadm w PM10",
+      "Wskaźnik - wzór": "Cd(PM10)",
+      "Wskaźnik - kod": "Cd(PM10)",
+      "Id wskaźnika": 57
+    },
+    {
+      "Identyfikator stanowiska": 28373,
+      "Identyfikator stacji": 736,
+      "Wskaźnik": "nikiel w PM10",
+      "Wskaźnik - wzór": "Ni(PM10)",
+      "Wskaźnik - kod": "Ni(PM10)",
+      "Id wskaźnika": 58
+    },
+    {
+      "Identyfikator stanowiska": 28374,
+      "Identyfikator stacji": 736,
+      "Wskaźnik": "ołów w PM10",
+      "Wskaźnik - wzór": "Pb(PM10)",
+      "Wskaźnik - kod": "Pb(PM10)",
+      "Id wskaźnika": 55
+    },
+    {
+      "Identyfikator stanowiska": 28375,
+      "Identyfikator stacji": 736,
+      "Wskaźnik": "pył zawieszony PM10",
+      "Wskaźnik - wzór": "PM10",
+      "Wskaźnik - kod": "PM10",
+      "Id wskaźnika": 3
+    },
+    {
+      "Identyfikator stanowiska": 28376,
+      "Identyfikator stacji": 736,
+      "Wskaźnik": "indeno(1,2,3-cd)piren w PM10",
+      "Wskaźnik - wzór": "IP(PM10)",
+      "Wskaźnik - kod": "IP(PM10)",
+      "Id wskaźnika": 67
+    },
+    {
+      "Identyfikator stanowiska": 28377,
+      "Identyfikator stacji": 736,
+      "Wskaźnik": "benzo(a)antracen w PM10",
+      "Wskaźnik - wzór": "BaA(PM10)",
+      "Wskaźnik - kod": "BaA(PM10)",
+      "Id wskaźnika": 64
+    },
+    {
+      "Identyfikator stanowiska": 28378,
+      "Identyfikator stacji": 736,
+      "Wskaźnik": "benzen",
+      "Wskaźnik - wzór": "C6H6",
+      "Wskaźnik - kod": "C6H6",
+      "Id wskaźnika": 10
+    }
+  ],
+  "meta": {
+    "dc:description": "Usługa sieciowa udostępniająca listę funkcjonujących stanowisk pomiarowych",
+    "sy:updateFrequency": "1",
+    "dc:language": "pol (ISO 639-2 / ISO 639-3)",
+    "schema:contentType": "application/ld+json",
+    "schema:provider": {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Warszawa",
+        "postalCode": "02-362",
+        "streetAddress": "Bitwy Warszawskiej 1920 3"
+      },
+      "email": "api@gios.gov.pl",
+      "name": "Główny Inspektorat Ochrony Środowiska"
+    },
+    "schema:dateModified": "03.11.2022",
+    "dc:title": "Lista stanowisk pomiarowych na stacji",
+    "schema:datePublished": "10.04.2017",
+    "schema:keywords": "powietrze, jakość powietrza, zanieczyszczenie powietrza, stacje pomiarowe, stanowiska pomiarowe, monitoring powietrza, Państwowy Monitoring Środowiska, środowisko, stan środowiska",
+    "sy:updatePeriod": "year",
+    "schema:isPartOf": "Państwowy Monitoring Środowiska, Jakość powietrza"
+  },
+  "links": {
+    "next": "https://api.gios.gov.pl/pjp-api/v1/rest/station/sensors/736?size=50&page=1&size=50",
+    "last": "https://api.gios.gov.pl/pjp-api/v1/rest/station/sensors/736?size=50&page=0&size=50",
+    "prev": "https://api.gios.gov.pl/pjp-api/v1/rest/station/sensors/736?size=50&page=0&size=50",
+    "self": "https://api.gios.gov.pl/pjp-api/v1/rest/station/sensors/736?size=50&page=0&size=50",
+    "first": "https://api.gios.gov.pl/pjp-api/v1/rest/station/sensors/736?size=50&page=0&size=50"
+  },
+  "totalPages": 1
+}
