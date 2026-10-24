@@ -10,6 +10,8 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-10-24
+
 ### Added
 
 - GIOŚ stations, the official Polish air quality network, read through the
@@ -22,3 +24,6 @@ the notes of the version's GitHub Release.
 - "GIOŚ air quality" dashboard widget, scene triggers "air quality degraded"
   and "back to normal", scene action "get the air quality".
 - Texts and documentation in English, French, German and Spanish.
+
+[Unreleased]: https://github.com/guim31/gladys-gios/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/guim31/gladys-gios/releases/tag/v1.0.0
