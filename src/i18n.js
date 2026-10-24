@@ -171,7 +171,7 @@ export const MESSAGES = {
           }
         : minutes < 2880
           ? { en: `${hours} h`, fr: `${hours} h`, de: `${hours} Std.`, es: `${hours} h` }
-          : { en: `${days} d`, fr: `${days} j`, de: `${days} T.`, es: `${days} d` };
+          : { en: `${days} d`, fr: `${days} j`, de: `${days} Tg.`, es: `${days} d` };
     if (stale) {
       return {
         en: `Outdated (${span.en})`,
@@ -199,7 +199,8 @@ export const MESSAGES = {
     return Object.fromEntries(
       ['en', 'fr', 'de', 'es'].map((lang) => {
         const label = level ? LEVELS[level][lang] : TEXT.noIndex[lang];
-        return [lang, [`${station}: ${label}`, ...parts].join(' · ')];
+        const colon = lang === 'fr' ? ' :' : ':';
+        return [lang, [`${station}${colon} ${label}`, ...parts].join(' · ')];
       }),
     );
   },
@@ -264,7 +265,12 @@ export const MESSAGES = {
    */
   found({ query, house, stations, more }) {
     const where = query
-      ? { en: `"${query}"`, fr: `« ${query} »`, de: `„${query}“`, es: `«${query}»` }
+      ? {
+          en: `for "${query}"`,
+          fr: `pour « ${query} »`,
+          de: `für „${query}“`,
+          es: `para «${query}»`,
+        }
       : {
           en: `near ${house}`,
           fr: `autour de ${house}`,
@@ -273,10 +279,10 @@ export const MESSAGES = {
         };
     if (stations.length === 0) {
       return {
-        en: `No GIOŚ station for ${where.en}.`,
-        fr: `Aucune station du GIOŚ pour ${where.fr}.`,
-        de: `Keine GIOŚ-Station für ${where.de}.`,
-        es: `Ninguna estación de GIOŚ para ${where.es}.`,
+        en: `No GIOŚ station ${where.en}.`,
+        fr: `Aucune station du GIOŚ ${where.fr}.`,
+        de: `Keine GIOŚ-Station ${where.de}.`,
+        es: `Ninguna estación de GIOŚ ${where.es}.`,
       };
     }
     const lines = stations.map(
@@ -286,10 +292,10 @@ export const MESSAGES = {
         }`,
     );
     const head = {
-      en: `GIOŚ stations for ${where.en}, to type in "Stations":`,
-      fr: `Stations du GIOŚ pour ${where.fr}, à saisir dans « Stations » :`,
-      de: `GIOŚ-Stationen für ${where.de}, in „Stationen“ einzutragen:`,
-      es: `Estaciones de GIOŚ para ${where.es}, para escribir en «Estaciones»:`,
+      en: `GIOŚ stations ${where.en}, to type in "Stations":`,
+      fr: `Stations du GIOŚ ${where.fr}, à saisir dans « Stations » :`,
+      de: `GIOŚ-Stationen ${where.de}, in „Stationen“ einzutragen:`,
+      es: `Estaciones de GIOŚ ${where.es}, para escribir en «Estaciones»:`,
     };
     const tail = more
       ? {

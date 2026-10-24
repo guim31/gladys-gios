@@ -39,13 +39,15 @@ const INDEX_POLLUTANTS = { SO2: 'so2', NO2: 'no2', PM10: 'pm10', 'PM2.5': 'pm25'
 export class ApiError extends Error {
   /**
    * @param {string} message
-   * @param {{ status?: number, code?: string }} [details]
+   * @param {{ status?: number, code?: string, unreachable?: boolean }} [details]
    */
-  constructor(message, { status, code } = {}) {
+  constructor(message, { status, code, unreachable = false } = {}) {
     super(message);
     this.name = 'ApiError';
     this.status = status;
     this.code = code;
+    /** No answer at all (DNS, network, timeout): one problem for every station. */
+    this.unreachable = unreachable;
   }
 
   /** True for a manual sensor, which never has current data. */
@@ -71,7 +73,7 @@ async function getJson(path, { fetch: fetchImpl = globalThis.fetch } = {}) {
     });
   } catch (err) {
     const reason = err.name === 'TimeoutError' ? 'timeout' : err.cause?.code || err.message;
-    throw new ApiError(`GIOŚ API unreachable (${reason})`);
+    throw new ApiError(`GIOŚ API unreachable (${reason})`, { unreachable: true });
   }
   let body = null;
   try {
@@ -91,7 +93,7 @@ async function getJson(path, { fetch: fetchImpl = globalThis.fetch } = {}) {
   if (!body || typeof body !== 'object') {
     throw new ApiError('GIOŚ API: unreadable answer', { status: response.status });
   }
-  return body;
+  return { body, status: response.status };
 }
 
 const toNumber = (value) => {
@@ -107,10 +109,10 @@ const toNumber = (value) => {
 export async function fetchStations(deps) {
   const stations = [];
   for (let page = 0; page < 5; page += 1) {
-    const body = await getJson(`/station/findAll?size=500&page=${page}`, deps);
+    const { body, status } = await getJson(`/station/findAll?size=500&page=${page}`, deps);
     const list = body['Lista stacji pomiarowych'];
     if (!Array.isArray(list)) {
-      throw new ApiError('GIOŚ API: no station list in the answer');
+      throw new ApiError('GIOŚ API: no station list in the answer', { status });
     }
     for (const item of list) {
       const id = toNumber(item['Identyfikator stacji']);
@@ -141,10 +143,13 @@ export async function fetchStations(deps) {
  * @returns {Promise<Array<{ id: string, pollutant: string }>>}
  */
 export async function fetchSensors(stationId, deps) {
-  const body = await getJson(`/station/sensors/${encodeURIComponent(stationId)}?size=100`, deps);
+  const { body, status } = await getJson(
+    `/station/sensors/${encodeURIComponent(stationId)}?size=100`,
+    deps,
+  );
   const list = body['Lista stanowisk pomiarowych dla podanej stacji'];
   if (!Array.isArray(list)) {
-    throw new ApiError('GIOŚ API: no sensor list in the answer');
+    throw new ApiError('GIOŚ API: no sensor list in the answer', { status });
   }
   return list
     .map((item) => ({
@@ -162,13 +167,13 @@ export async function fetchSensors(stationId, deps) {
  * @returns {Promise<{ value: number, at: number } | null>}
  */
 export async function fetchLatest(sensorId, deps) {
-  const body = await getJson(
+  const { body, status } = await getJson(
     `/data/getData/${encodeURIComponent(sensorId)}?size=${DATA_PAGE_SIZE}`,
     deps,
   );
   const list = body['Lista danych pomiarowych'];
   if (!Array.isArray(list)) {
-    throw new ApiError('GIOŚ API: no measurement list in the answer');
+    throw new ApiError('GIOŚ API: no measurement list in the answer', { status });
   }
   let latest = null;
   for (const item of list) {
@@ -200,7 +205,7 @@ function level(value) {
  * @returns {Promise<{ level: number|null, calculatedAt: number|null, sourceAt: number|null, pollutants: Record<string, number> } | null>}
  */
 export async function fetchIndex(stationId, deps) {
-  const body = await getJson(`/aqindex/getIndex/${encodeURIComponent(stationId)}`, deps);
+  const { body } = await getJson(`/aqindex/getIndex/${encodeURIComponent(stationId)}`, deps);
   const index = body.AqIndex;
   if (!index || typeof index !== 'object' || index['Identyfikator stacji pomiarowej'] == null) {
     return null;

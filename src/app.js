@@ -44,12 +44,28 @@ export function registerHandlers(gladys, { store = new Store(), fetch, timers = 
 
   /** Publish what the last reads changed: devices, states, /data, status, widget. */
   async function afterCycle() {
+    // /data first: the level a scene event announces is saved before the
+    // event leaves, so a crash in between does not fire it twice.
+    await hub.save();
     if (hub.devicesChanged) {
-      hub.devicesChanged = false;
-      await publishDevices();
+      try {
+        await publishDevices();
+        hub.devicesChanged = false; // else sent again after the next read
+      } catch (err) {
+        hub.issues.fail('discovery', `Cannot publish the devices: ${err.message}`);
+      }
     }
     for (const record of hub.configuredRecords()) {
-      await hub.publishStates(record);
+      try {
+        await hub.publishStates(record);
+        hub.issues.ok(`publish:${record.id}`, `${record.name ?? record.id}: published again`);
+      } catch (err) {
+        // The others still go out; the next cycle sends what is missing.
+        hub.issues.fail(
+          `publish:${record.id}`,
+          `Cannot publish ${record.name ?? record.id}: ${err.message}`,
+        );
+      }
     }
     await hub.save();
     await updateStatus();
@@ -150,8 +166,12 @@ export function registerHandlers(gladys, { store = new Store(), fetch, timers = 
     if (!record) {
       return;
     }
-    await poller.refreshNow([record.id], { maxAgeMs: 10 * 60_000 });
-    await hub.publishStates(record, { force: true });
+    // A read publishes every state (the SDK forgot them at the creation);
+    // without one, they are sent again here.
+    const read = await poller.refreshNow([record.id], { maxAgeMs: 10 * 60_000 });
+    if (!read) {
+      await hub.publishStates(record, { force: true });
+    }
     gladys.requestWidgetRefresh(WIDGET_KEY);
   }
   gladys.onDeviceCreated(onDeviceAdded);

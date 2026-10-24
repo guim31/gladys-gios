@@ -25,6 +25,7 @@ export class Catalog {
     this.stations = [];
     this.fetchedAt = 0;
     this.failedAt = 0;
+    this.lastError = null;
     this.loading = null;
     /** Set when a new list must be saved under /data. */
     this.changed = false;
@@ -51,17 +52,25 @@ export class Catalog {
   async ensure({ force = false } = {}) {
     const age = this.now() - this.fetchedAt;
     const fresh = this.stations.length > 0 && age < (force ? 60_000 : CATALOG_MAX_AGE_MS);
-    if (fresh || (!force && this.now() - this.failedAt < RETRY_MS && this.stations.length > 0)) {
+    // After a failure, wait before asking again (GIOŚ allows 2 requests per
+    // minute on the list), whoever asks: every station read calls this.
+    const waiting = this.failedAt > 0 && this.now() - this.failedAt < (force ? 60_000 : RETRY_MS);
+    if (fresh || (waiting && this.stations.length > 0)) {
       return this.stations;
+    }
+    if (waiting) {
+      throw this.lastError;
     }
     this.loading ??= fetchStations(this.deps)
       .then((stations) => {
         this.stations = stations;
         this.fetchedAt = this.now();
+        this.failedAt = 0;
         this.changed = true;
       })
       .catch((err) => {
         this.failedAt = this.now();
+        this.lastError = err;
         if (this.stations.length === 0) {
           throw err;
         }

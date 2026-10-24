@@ -45,6 +45,13 @@ export const STATE_HEARTBEAT_MS = 6 * 60 * 60 * 1000;
 /** The sensor list of a station is read again after this age. */
 const SENSORS_MAX_AGE_MS = 24 * 60 * 60 * 1000;
 
+/**
+ * A level seen longer ago than this is no reference for a scene event: the
+ * station was not read meanwhile (device added days after the configuration,
+ * container stopped), and the next index starts afresh, without event.
+ */
+const ANNOUNCED_MAX_AGE_MS = 3 * 60 * 60 * 1000;
+
 /** From this level on, the air quality is degraded ("moderate", 2). */
 export const DEGRADED_FROM = 2;
 
@@ -260,7 +267,7 @@ export class Hub {
       return record;
     } catch (err) {
       this.lastResults.set(id, { ok: false, error: err.message, unknown: err.unknown === true });
-      if (err instanceof ApiError && err.status === undefined && !err.code) {
+      if (err instanceof ApiError && err.unreachable) {
         // Unreachable: one problem for every station.
         this.issues.fail('api', err.message);
       } else {
@@ -331,7 +338,7 @@ export class Hub {
           logger.debug(`${deviceName(record)}: sensor ${sensor.id} is manual, skipped`);
           continue;
         }
-        if (err instanceof ApiError && err.status === undefined && !err.code) {
+        if (err instanceof ApiError && err.unreachable) {
           throw err; // the API is down: the whole read failed
         }
         logger.debug(`${deviceName(record)}: sensor ${sensor.id}: ${err.message}`);
@@ -372,8 +379,12 @@ export class Hub {
     if (level === null || level === undefined) {
       return null;
     }
-    const previous = record.announced;
+    const recent =
+      typeof record.announcedAt === 'number' &&
+      this.now() - record.announcedAt <= ANNOUNCED_MAX_AGE_MS;
+    const previous = recent ? record.announced : null;
     record.announced = level;
+    record.announcedAt = this.now();
     if (previous === null || previous === undefined) {
       record.worst = level >= DEGRADED_FROM ? level : null;
       return null;
@@ -436,9 +447,9 @@ export class Hub {
    * @param {{ force?: boolean }} [options] force: the device was just added
    */
   async publishStates(record, { force = false } = {}) {
-    const event = this.pendingEvents.get(record.id);
-    this.pendingEvents.delete(record.id);
     if (!this.isCreated(record)) {
+      // No device, no scene can name it: the event is dropped.
+      this.pendingEvents.delete(record.id);
       return;
     }
     const ids = idsOf(this.gladys, record.id);
@@ -464,14 +475,26 @@ export class Hub {
     if (minutes !== null) {
       state(AGE_KEY, minutes);
     }
+    let failure = null;
     if (states.length > 0) {
-      await this.gladys.publishChangedStates(states, { heartbeat: STATE_HEARTBEAT_MS });
+      try {
+        await this.gladys.publishChangedStates(states, { heartbeat: STATE_HEARTBEAT_MS });
+      } catch (err) {
+        failure = err;
+      }
     }
+    // The event goes out even if the states failed, and stays pending until
+    // Gladys took it: `announced` already moved, it would never come again.
+    const event = this.pendingEvents.get(record.id);
     if (event) {
+      await this.gladys.publishSceneEvent(event.key, event.data);
+      this.pendingEvents.delete(record.id);
       logger.info(
         `${deviceName(record)}: air quality ${event.data.previous_level} -> ${event.data.level}`,
       );
-      await this.gladys.publishSceneEvent(event.key, event.data);
+    }
+    if (failure) {
+      throw failure;
     }
   }
 

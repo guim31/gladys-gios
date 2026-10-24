@@ -226,3 +226,93 @@ test('onPoll, should the core call it, reads only a station that is due', async 
   await w.gladys.fake.poll(discovered(w, WARSZAWA));
   assert.ok(w.network.calls.length > before);
 });
+
+test('a device added days after the configuration fires nothing at once', async () => {
+  const w = await createWorld({ config: { stations: WARSZAWA } });
+  // Read once for the Discovery tab (index 0), then not read while not added.
+  w.advance(48 * HOUR);
+  w.network.index[WARSZAWA] = indexAt(3, '2026-10-26 05:12:00');
+  await createAll(w);
+  assert.equal(w.gladys.fake.lastState(featureId(w, WARSZAWA, 'index')), 3);
+  assert.deepEqual(w.gladys.fake.sceneEvents, []);
+  // From there, a change does fire.
+  w.network.index[WARSZAWA] = indexAt(4, '2026-10-26 06:12:00');
+  w.advance(HOUR);
+  await w.app.poller.cycle();
+  assert.deepEqual(
+    w.gladys.fake.sceneEvents.map((event) => event.data.level),
+    ['bad'],
+  );
+});
+
+test('an event Gladys refused is sent at the next cycle, an event sent is not sent again', async () => {
+  const store = new MemoryStore();
+  const w = await createWorld({ config: { stations: WARSZAWA }, store });
+  await createAll(w);
+  const publish = w.gladys.publishSceneEvent.bind(w.gladys);
+  let refuse = true;
+  w.gladys.publishSceneEvent = async (...args) => {
+    if (refuse) {
+      refuse = false;
+      throw new Error('HTTP 429');
+    }
+    return publish(...args);
+  };
+  w.network.index[WARSZAWA] = indexAt(4, '2026-10-24 07:12:00');
+  w.advance(HOUR);
+  await w.app.poller.cycle();
+  assert.deepEqual(w.gladys.fake.sceneEvents, []);
+  w.advance(HOUR);
+  await w.app.poller.cycle();
+  assert.deepEqual(
+    w.gladys.fake.sceneEvents.map((event) => event.key),
+    ['air_quality_degraded'],
+  );
+  await w.app.stop();
+
+  // Restarted on the same /data, the same index: nothing new.
+  const again = await createWorld({
+    config: { stations: WARSZAWA },
+    store,
+    devices: w.gladys.fake.discoveredDevices,
+    setup: (network) => {
+      network.index[WARSZAWA] = indexAt(4, '2026-10-24 07:12:00');
+    },
+  });
+  again.advance(2 * HOUR);
+  await again.app.poller.refreshNow([WARSZAWA]);
+  assert.deepEqual(again.gladys.fake.sceneEvents, []);
+});
+
+test('the station list refused: asked again after a pause, not by every station', async () => {
+  const w = await createWorld({
+    config: { stations: ALL },
+    setup: (network) => {
+      network.stations = { status: 429 };
+    },
+  });
+  const lists = () => w.network.calls.filter((call) => call.startsWith('/station/findAll'));
+  assert.equal(lists().length, 1);
+  // The stations are read all the same, named by their number.
+  assert.equal(discovered(w, WARSZAWA).name, 'GIOŚ #530');
+  await createAll(w);
+  assert.equal(lists().length, 1);
+  w.network.stations = null;
+  w.advance(HOUR);
+  await w.app.poller.cycle();
+  assert.equal(lists().length, 2);
+  assert.equal(discovered(w, WARSZAWA).name, 'GIOŚ Warszawa, Al. Niepodległości');
+});
+
+test('one odd answer spoils one pollutant, not the station nor the status', async () => {
+  const w = await createWorld({
+    config: { stations: WARSZAWA },
+    setup: (network) => {
+      network.data['3575'] = { unexpected: true };
+    },
+  });
+  await createAll(w);
+  assert.equal(w.gladys.fake.lastState(featureId(w, WARSZAWA, 'pm25')), 12.7);
+  assert.equal(w.gladys.fake.lastState(featureId(w, WARSZAWA, 'c6h6')), undefined);
+  assert.deepEqual(w.gladys.fake.connectionStatus, { connected: true });
+});

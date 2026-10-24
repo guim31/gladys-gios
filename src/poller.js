@@ -48,6 +48,8 @@ export function createPoller({
   const inFlight = new Map();
   let timer = null;
   let stopped = true;
+  /** The cycles run one after the other: the last one queued. */
+  let queue = Promise.resolve();
 
   /** The stations to read: added to Gladys, or never read yet. */
   function wantedStations(config) {
@@ -90,11 +92,22 @@ export function createPoller({
     return true;
   }
 
-  /** One cycle: the wanted stations, in sequence, then the publication. */
-  async function cycle({ force = false, ids } = {}) {
+  /**
+   * One cycle: the wanted stations, in sequence, then the publication.
+   * Cycles never overlap (timer, restart, device added, actions): each waits
+   * for the previous one.
+   * @returns {Promise<boolean>} true when a station was read
+   */
+  function cycle(options = {}) {
+    const run = queue.then(() => runCycle(options));
+    queue = run.catch(() => {});
+    return run;
+  }
+
+  async function runCycle({ force = false, ids } = {}) {
     if (gladys.connected === false) {
       logger.debug('Gladys unreachable: cycle skipped');
-      return;
+      return false;
     }
     let read = false;
     for (const id of ids ?? wantedStations(getConfig())) {
@@ -104,6 +117,7 @@ export function createPoller({
     if (read || (force && ids === undefined)) {
       await afterCycle();
     }
+    return read;
   }
 
   function schedule() {
@@ -128,8 +142,11 @@ export function createPoller({
     /** (Re)start: read every wanted station now, then on the timer. */
     async restart() {
       stopped = false;
-      schedule();
-      await cycle({ force: true });
+      try {
+        await cycle({ force: true });
+      } finally {
+        schedule();
+      }
     },
 
     /** One timer cycle (tests). */
@@ -152,13 +169,14 @@ export function createPoller({
     /**
      * Read some stations now (a device just added, the check action), unless
      * they were read less than `maxAgeMs` ago.
+     * @returns {Promise<boolean>} true when a station was read (and published)
      */
     async refreshNow(ids, { maxAgeMs = 0 } = {}) {
       const due = ids.filter((id) => {
         const last = lastReadAt.get(id);
         return last === undefined || now() - last >= maxAgeMs;
       });
-      await cycle({ force: true, ids: due });
+      return cycle({ force: true, ids: due });
     },
 
     /** When a station was last read, undefined if never. */

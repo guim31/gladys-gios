@@ -64,7 +64,7 @@
       "description": {
         "en": "The numbers of the GIOŚ stations to read, separated by commas (10 at most). The \"Find a station\" button below gives them, by name or around a house.",
         "fr": "Les numéros des stations du GIOŚ à lire, séparés par des virgules (10 au plus). Le bouton « Trouver une station » ci-dessous les donne, par nom ou autour d'une maison.",
-        "de": "Die Nummern der zu lesenden GIOŚ-Stationen, durch Kommas getrennt (höchstens 10). Der Button „Station finden“ unten liefert sie, nach Name oder um ein Haus.",
+        "de": "Die Nummern der zu lesenden GIOŚ-Stationen, durch Kommas getrennt (höchstens 10). Der Button „Station finden“ unten liefert sie, nach Name oder in der Nähe eines Hauses.",
         "es": "Los números de las estaciones de GIOŚ que desea leer, separados por comas (10 como máximo). El botón «Buscar una estación» más abajo se los da, por nombre o alrededor de una casa."
       },
       "placeholder": {
@@ -582,7 +582,7 @@
       "description": {
         "en": "Of one station, or the worst of yours, with a sentence ready for a notification.",
         "fr": "D'une station, ou la pire des vôtres, avec une phrase prête pour une notification.",
-        "de": "Einer Station oder die schlechteste deiner Stationen, mit einem fertigen Satz für eine Benachrichtigung.",
+        "de": "Für eine Station oder die schlechteste deiner Stationen, mit einem fertigen Satz für eine Benachrichtigung.",
         "es": "De una estación, o la peor de las suyas, con una frase lista para una notificación."
       },
       "timeout_seconds": 10,

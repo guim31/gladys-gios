@@ -31,7 +31,7 @@ test('no name: the nearest stations to the house, with their distance', async ()
   const w = await createWorld({ houses: [HOUSE] });
   const ack = await w.gladys.fake.action('find_station', {});
   const lines = ack.data.message.fr.split('\n');
-  assert.equal(lines[0], 'Stations du GIOŚ pour autour de Dom, à saisir dans « Stations » :');
+  assert.equal(lines[0], 'Stations du GIOŚ autour de Dom, à saisir dans « Stations » :');
   assert.equal(lines[1], '#530 Warszawa, Al. Niepodległości (1.4 km)');
   assert.equal(lines.length, 10, 'the head, 8 stations, the tail');
   assert.match(lines.at(-1), /…et 4 autres : affinez la recherche\./);
