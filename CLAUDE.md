@@ -32,15 +32,23 @@ pushing.
 
 ```
 index.js                          SDK wiring only: handlers registered before connect()
-src/devices/index.js              registry of the device blueprints + dispatch helpers
-src/devices/<type>.js             one device type per file (buildDevice, onPoll, onSetValue...)
-src/scenes.js                     scene action handlers (manifest `scene_actions`)
-src/widgets.js                    dashboard widget handlers (manifest `widgets`)
+src/app.js                        every handler, wired on a Gladys client (real or fake)
+src/api.js                        the GIOŚ API: the only place that knows its Polish field names
+src/time.js                       GIOŚ dates (Polish local time, no offset) to epoch ms
+src/catalog.js                    the station list (cached a day), search by name / distance
+src/hub.js                        records of the stations, reads, states, scene triggers
+src/poller.js                     the container's own timer (should_poll: false)
+src/devices.js                    one device per station (buildDevice, feature keys)
+src/actions.js                    Configuration buttons (find a station, check the stations)
+src/scenes.js                     scene action handler (manifest `scene_actions`)
+src/widgets.js                    dashboard widget handler (manifest `widgets`)
+src/i18n.js                       every produced text, in en/fr/de/es
 src/config.js                     DEFAULT_CONFIG (mirrors the manifest defaults) + normalization
-src/weather.js                    example driver (Open-Meteo)
+src/store.js, src/issues.js       /data persistence, failures logged once
 gladys-assistant-integration.json manifest: name, config_schema, actions, image...
-docs/en.md, docs/fr.md            user documentation, re-hosted by Gladys (mandatory)
+docs/{en,fr,de,es}.md             user documentation, re-hosted by Gladys (mandatory)
 test/                             node --test, against the SDK's fake Gladys (integration-sdk/testing)
+test/fixtures/gios/               real GIOŚ answers recorded on 2026-10-24 (530, 401, 736)
 .github/scripts/release.mjs       release helpers (manifest bump, changelog), tested in test/
 ```
 
@@ -70,8 +78,9 @@ test/                             node --test, against the SDK's fake Gladys (in
   `type: "provider"`: 5.1.0). `test/manifest.test.js` ties the manifest to the
   code (defaults, action, scene and widget handlers): change both sides
   together.
-- **User-facing text** is bilingual (English and French): action messages,
-  manifest texts, and `docs/en.md` / `docs/fr.md`, kept in sync.
+- **User-facing text** exists in English, French, German ("du") and Spanish
+  ("usted"): action messages, manifest texts, widget and scene texts, feature
+  names, and `docs/{en,fr,de,es}.md`, kept in sync (`test/i18n.test.js`).
 - **Style.** Prettier formats, ESLint catches mistakes. Comments explain why,
   in English. Tests never touch the network.
 
@@ -233,3 +242,34 @@ long, et sur un « Sie »/« Ihr… » de politesse en allemand. Le store exige 
 - Docs `en`, `fr`, `de`, `es` avec les mêmes sections.
 - Chauffe, ouverture, sécurité : ne rien rendre pilotable « comme un thermostat » ou par un assistant
   vocal quand une erreur serait dangereuse (leçon d'OctoPrint).
+
+## GIOŚ (cette intégration)
+
+- **API v1** `https://api.gios.gov.pl/pjp-api/v1/rest/` (2025), ouverte, sans clé. Tous les champs sont
+  **en polonais**, avec des coquilles d'origine (« wskażnika » à côté de « wskaźnika », clé de la date
+  source de l'indice global tronquée en « … wskaźnika st ») : `src/api.js` les cherche par motif, et
+  c'est le seul fichier qui les connaît. Réponses en `application/ld+json`.
+- **Limites publiées** : 1500 req/min pour `data/getData` et `aqindex/getIndex`, **2 req/min** pour
+  `station/findAll` (liste mise en cache un jour, sous `/data`).
+- `station/findAll?size=500` tient en une page (287 stations le 24/10/2026) ; la pagination est suivie
+  quand même (5 pages au plus).
+- **Capteurs manuels** : une station peut avoir deux capteurs du même polluant (Kraków Bujaka : deux
+  PM10, un PM2.5 manuel seul). `data/getData` d'un capteur manuel répond **HTTP 400** avec
+  `error_code: API-ERR-100003` : marqué `manual`, sauté jusqu'à la relecture quotidienne de la liste des
+  capteurs. Un polluant qui n'a qu'un capteur manuel ne devient jamais une fonctionnalité.
+- **Dates** : heure locale polonaise sans décalage (`2026-10-24 06:00:00`). Converties par la règle
+  européenne de l'heure d'été (`src/time.js`), sans dépendre du fuseau du conteneur (TZ de Gladys) ni
+  de l'ICU de l'image.
+- La dernière heure de `getData` vaut souvent `null` : on prend la plus récente non nulle. Au-delà de
+  3 h, une valeur n'est plus publiée (ni par le battement de cœur).
+- **Indice** : 0 (Bardzo dobry) à 5 (Bardzo zły), `-1`/`null` = « Brak indeksu » (rien de publié). Une
+  station inconnue répond 200 avec tous les champs à `null`, et une liste de capteurs vide.
+- **CO et benzène** n'ont pas de couple Gladys en µg/m³ (`co-sensor` : binaire en ppm ; `voc-sensor` :
+  ppb) : publiés en `unknown/unknown` avec l'unité µg/m³ (le front les affiche en valeur + unité).
+- **`text/text`** : l'état se publie `{ device_feature_external_id, text }`, pas `state: { text }` (le
+  faux Gladys du SDK répond 400).
+- Déclencheurs : `air_quality_degraded` à chaque montée vers « moderate » (2) ou pire, filtre
+  `level` ; `air_quality_back_to_normal` au retour à ≤ 1, filtre `worst_level` (pire niveau de
+  l'épisode). Le premier indice fixe le niveau de départ, sans événement ; `announced`/`worst` sont
+  gardés sous `/data` pour qu'un redémarrage ne redéclenche rien.
+- Pas de matériel : tout est testable contre l'API réelle, d'où les fixtures enregistrées.

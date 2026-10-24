@@ -1,0 +1,159 @@
+# GIOŚ
+
+Die Luftqualität, gemessen von den offiziellen Stationen von
+[GIOŚ](https://powietrze.gios.gov.pl), der polnischen Hauptinspektion für
+Umweltschutz (Główny Inspektorat Ochrony Środowiska): der polnische
+Luftqualitätsindex und die Schadstoffe, Station für Station, Stunde für
+Stunde.
+
+Nicht mit GIOŚ verbunden. Die Daten stammen aus der offenen API
+(`api.gios.gov.pl`), so verwendet, wie GIOŚ sie veröffentlicht.
+
+## Was die Integration macht
+
+- Liest die GIOŚ-Stationen, die du auswählst (höchstens 10), ohne Konto und
+  ohne Schlüssel.
+- Legt **ein Gerät pro Station** an: den polnischen Luftqualitätsindex (0 bis 5) und seine Stufe als Wort, die Schadstoffe, die die Station misst (PM2.5,
+  PM10, NO₂, O₃, SO₂, CO, Benzol), und das Alter der Daten.
+- Fügt ein Dashboard-Widget **GIOŚ-Luftqualität**, zwei Szenenauslöser
+  (**Luftqualität verschlechtert**, **wieder normal**) und eine Szenenaktion
+  **Luftqualität abrufen** hinzu.
+- Findet eine Station nach Name oder Stadt, oder die nächstgelegenen zu
+  deinem Haus.
+
+Nur lesend: Die Integration liest nur öffentliche Daten.
+
+## Voraussetzungen
+
+- Gladys Assistant 5.2.0 oder neuer.
+- Internetzugang von Gladys zu `api.gios.gov.pl`.
+- Für die Suche um dein Haus: sein Standort unter **Einstellungen →
+  Zuhause**.
+
+## Konfiguration
+
+### Stationen wählen
+
+1. Öffne den Reiter **Konfiguration** der Integration.
+2. Klicke auf **Station finden**: Gib einen Namen oder eine Stadt ein
+   (`Kraków`, `Gdansk`: Akzente sind optional), oder lass das Feld leer, um
+   die Stationen in der Nähe deines Hauses mit ihrer Entfernung aufzulisten.
+3. Trage die gewünschten Nummern in **Stationen** ein, durch Kommas getrennt:
+   zum Beispiel `530, 401`. Speichere.
+4. Füge die Stationen im Reiter **Entdecken** zu Gladys hinzu.
+
+Die [Karte der Stationen](https://powietrze.gios.gov.pl/pjp/current) zeigt
+sie alle.
+
+### Weitere Einstellungen
+
+- **Abruf**: alle 30 Minuten (Standard) oder jede Stunde. GIOŚ veröffentlicht
+  Stundenmittel, kurz nach jeder vollen Stunde: häufigeres Lesen brächte
+  nichts.
+- **Sprache**: Sprache der Funktionsnamen (beim Hinzufügen eines Geräts
+  festgelegt, also zuerst wählen) und der Szenentexte. Standard: Französisch.
+
+Der Button **Stationen prüfen** liest alle Stationen sofort und zeigt, was
+jede antwortet.
+
+## Geräte
+
+Ein Gerät pro Station, `GIOŚ <Station>` genannt.
+
+| Funktion                            | Werte                                      |
+| ----------------------------------- | ------------------------------------------ |
+| Luftqualitätsindex                  | 0 bis 5 (polnischer Index, siehe unten)    |
+| Luftqualität                        | die Stufe als Wort, in deiner Sprache      |
+| PM2.5, PM10, NO₂, O₃, SO₂, CO, C₆H₆ | µg/m³, Stundenmittel                       |
+| Alter der Messung                   | Minuten seit der Stunde der neuesten Daten |
+
+Nur die Schadstoffe, die die Station misst, werden angelegt. CO und Benzol
+haben in Gladys keinen eigenen Typ in µg/m³ und erscheinen als einfache
+Werte, nach ihrer Formel benannt.
+
+Der **polnische Luftqualitätsindex** (Polski indeks jakości powietrza) hat
+sechs Stufen: 0 Sehr gut (Bardzo dobry), 1 Gut (Dobry), 2 Mäßig
+(Umiarkowany), 3 Ausreichend (Dostateczny), 4 Schlecht (Zły), 5 Sehr schlecht
+(Bardzo zły). GIOŚ berechnet ihn aus PM2.5, PM10, NO₂, O₃ und SO₂: der
+schlechteste bestimmt ihn.
+
+Ein Wert, der älter als 3 Stunden ist, wird nicht mehr als aktuell
+veröffentlicht: Gladys behält den letzten mit seinem Datum, und das Widget
+zeigt, dass die Daten veraltet sind.
+
+## Widget
+
+**GIOŚ-Luftqualität**:
+
+- mit einer gewählten Station: bis zu vier Schadstoff-Kacheln, die Stufe des
+  Index farbig (grün, orange, rot) und das Alter der Daten;
+- ohne: eine Zeile pro Station, ihre Stufe farbig.
+
+## Szenen
+
+### Auslöser: GIOŚ: Luftqualität verschlechtert
+
+Löst aus, wenn der Index einer Station auf **Mäßig** oder schlechter steigt,
+oder sich weiter verschlechtert (Mäßig, dann Schlecht löst zweimal aus).
+Filter: die Station und die **neue Stufe**: Wähle die Stufen ab deiner
+Schwelle (zum Beispiel Schlecht und Sehr schlecht). Informationen für die
+Aktionen: Name der Station, Stufe, ihr Index, der vorherige Index, der
+Schadstoff, der die Stufe bestimmt, eine fertige Zusammenfassung.
+
+### Auslöser: GIOŚ: Luftqualität wieder normal
+
+Löst aus, wenn der Index nach einer Verschlechterung zu **Gut** oder **Sehr
+gut** zurückkehrt. Filter: die Station und die schlechteste Stufe, die die
+Verschlechterung erreicht hat (wähle dieselben Stufen wie oben, um beide
+Szenen zu koppeln). Informationen: die neue Stufe, die schlechteste erreichte
+Stufe, eine Zusammenfassung.
+
+Der erste nach der Installation gelesene Index legt die Ausgangsstufe fest und
+löst nichts aus; ein Neustart löst dieselbe Änderung nicht zweimal aus.
+
+### Aktion: GIOŚ: Luftqualität abrufen
+
+Die Luftqualität einer Station, oder der Station mit dem schlechtesten Index:
+Zusammenfassung, Stufe, Index, Schadstoff, PM2.5, PM10, NO₂, O₃ und das Alter
+der Daten, für die folgenden Aktionen (eine Nachricht, eine Bedingung).
+
+## Szenenbeispiele
+
+- **Fenster schließen**: Auslöser _Luftqualität verschlechtert_ mit den Stufen
+  Schlecht und Sehr schlecht → `{{triggerEvent.data.summary}}` senden und die
+  Lüftung ausschalten.
+- **Wieder lüften**: Auslöser _wieder normal_ mit denselben Stufen → „Du
+  kannst die Fenster wieder öffnen“ senden.
+- **Morgenbericht**: um 7:30 Uhr die Aktion _Luftqualität abrufen_ ohne
+  Station, dann ihre Zusammenfassung in der Morgennachricht senden.
+- **Luftreiniger**: Wenn die PM2.5-Funktion deiner Station 25 µg/m³
+  überschreitet, den Luftreiniger einschalten.
+
+## Fehlerbehebung
+
+- **„Noch keine Station“** im Konfigurationsbildschirm: Trage mindestens eine
+  Stationsnummer in **Stationen** ein.
+- **„keine GIOŚ-Station“** in der Prüfung: Die Nummer steht nicht in der
+  GIOŚ-Liste; nutze **Station finden**.
+- **Kein PM2.5 an einer Station, die es misst**: Manche Stationen haben nur
+  einen manuellen PM2.5-Sensor, dessen Ergebnisse GIOŚ Wochen später
+  veröffentlicht. Nur die automatischen, stündlichen Sensoren werden gelesen.
+- **„Die GIOŚ-API antwortet nicht“**: Die Werte bleiben erhalten und werden
+  beim nächsten Abruf neu gelesen. Der Reiter Protokolle meldet den Fehler
+  einmal, und sein Ende.
+- **Luftqualitätsindex ohne Wert**: GIOŚ gibt für diese Stunde keinen Index
+  („Brak indeksu“), zum Beispiel nach einem Messausfall.
+- Details im Reiter **Protokolle** der Integration (`LOG_LEVEL=debug` für
+  mehr).
+
+## Grenzen
+
+- Stündliche Daten, von GIOŚ kurz nach jeder Stunde veröffentlicht: Die
+  letzte Stunde fehlt oft noch, und die Werte sind 1 bis 2 Stunden alt.
+- Es sind Messungen, keine Vorhersagen.
+- GIOŚ begrenzt seine API (1500 Anfragen pro Minute für die aktuellen Daten,
+  2 pro Minute für die Stationsliste): Die Integration liest höchstens 10
+  Stationen, eine Anfrage pro Schadstoff, und die Stationsliste einmal am Tag.
+- Die Auslöser folgen dem stündlichen Index von GIOŚ, wie er veröffentlicht
+  wird: Ein Index, der zwischen zwei Stufen schwankt, löst bei jeder Änderung
+  aus.

@@ -1,177 +1,761 @@
 {
   "manifest_version": 1,
   "type": "device",
-  "name": "Demo Devices Template",
+  "name": "GIOŚ",
   "description": {
-    "en": "Starter template showing sensors, a switch, a dimmable light and a smart plug.",
-    "fr": "Template de démarrage : capteurs, interrupteur, lampe variable et prise connectée."
+    "en": "Air quality of the official Polish GIOŚ stations: index and pollutants, hour by hour.",
+    "fr": "Qualité de l'air des stations officielles polonaises du GIOŚ : indice et polluants, heure par heure.",
+    "de": "Luftqualität der offiziellen polnischen GIOŚ-Stationen: Index und Schadstoffe, stündlich.",
+    "es": "Calidad del aire de las estaciones oficiales polacas de GIOŚ: índice y contaminantes, cada hora."
   },
   "version": "1.0.0",
-  "docker_image": "ghcr.io/gladysassistant/integration-template-js:1.0.0",
-  "gladys_version": ">=5.1.0",
-  "cover_image": "https://raw.githubusercontent.com/GladysAssistant/integration-template-js/master/cover.png",
-  "categories": ["lighting", "security", "environment"],
-  "transports": ["local", "cloud"],
+  "docker_image": "ghcr.io/guim31/gladys-gios:1.0.0",
+  "gladys_version": ">=5.2.0",
+  "cover_image": "https://raw.githubusercontent.com/guim31/gladys-gios/main/cover.png",
+  "categories": ["environment"],
+  "transports": ["cloud"],
+  "location": true,
   "config_schema": [
     {
       "key": "intro",
       "type": "section",
-      "label": { "en": "Getting started", "fr": "Pour commencer" },
+      "label": {
+        "en": "Polish air quality stations",
+        "fr": "Stations polonaises de qualité de l'air",
+        "de": "Polnische Luftqualitätsstationen",
+        "es": "Estaciones polacas de calidad del aire"
+      },
       "description": {
-        "en": "The demo weather station reads real data from the free Open-Meteo API: pick the coordinates to observe. No account, no API key.",
-        "fr": "La station météo de démonstration lit de vraies données via l'API gratuite Open-Meteo : choisissez les coordonnées à observer. Pas de compte, pas de clé d'API."
+        "en": "Reads the official measuring stations of GIOŚ, the Polish Chief Inspectorate of Environmental Protection, through its open API (no account). Not affiliated with GIOŚ.",
+        "fr": "Lit les stations de mesure officielles du GIOŚ, l'inspection générale polonaise de l'environnement, par son API ouverte (sans compte). Non affilié au GIOŚ.",
+        "de": "Liest die offiziellen Messstationen von GIOŚ, der polnischen Hauptinspektion für Umweltschutz, über ihre offene API (ohne Konto). Nicht mit GIOŚ verbunden.",
+        "es": "Lee las estaciones de medición oficiales de GIOŚ, la Inspección General de Protección del Medio Ambiente de Polonia, mediante su API abierta (sin cuenta). Sin afiliación con GIOŚ."
       },
       "links": [
         {
-          "url": "https://open-meteo.com/en/docs",
-          "label": { "en": "Open-Meteo documentation", "fr": "Documentation Open-Meteo" }
+          "url": "https://powietrze.gios.gov.pl/pjp/current",
+          "label": {
+            "en": "Map of the stations",
+            "fr": "Carte des stations",
+            "de": "Karte der Stationen",
+            "es": "Mapa de las estaciones"
+          }
+        },
+        {
+          "url": "https://powietrze.gios.gov.pl/pjp/content/api",
+          "label": {
+            "en": "The GIOŚ API",
+            "fr": "L'API du GIOŚ",
+            "de": "Die GIOŚ-API",
+            "es": "La API de GIOŚ"
+          }
         }
       ]
     },
     {
-      "key": "latitude",
-      "type": "number",
-      "label": { "en": "Latitude", "fr": "Latitude" },
-      "description": {
-        "en": "Latitude used for the demo weather sensor.",
-        "fr": "Latitude utilisée par le capteur météo de démonstration."
+      "key": "stations",
+      "type": "string",
+      "label": {
+        "en": "Stations",
+        "fr": "Stations",
+        "de": "Stationen",
+        "es": "Estaciones"
       },
-      "placeholder": { "en": "e.g. 48.8566", "fr": "ex. 48.8566" },
-      "required": true,
-      "default": 48.8566,
-      "min": -90,
-      "max": 90
-    },
-    {
-      "key": "longitude",
-      "type": "number",
-      "label": { "en": "Longitude", "fr": "Longitude" },
       "description": {
-        "en": "Longitude used for the demo weather sensor.",
-        "fr": "Longitude utilisée par le capteur météo de démonstration."
+        "en": "The numbers of the GIOŚ stations to read, separated by commas (10 at most). The \"Find a station\" button below gives them, by name or around a house.",
+        "fr": "Les numéros des stations du GIOŚ à lire, séparés par des virgules (10 au plus). Le bouton « Trouver une station » ci-dessous les donne, par nom ou autour d'une maison.",
+        "de": "Die Nummern der zu lesenden GIOŚ-Stationen, durch Kommas getrennt (höchstens 10). Der Button „Station finden“ unten liefert sie, nach Name oder um ein Haus.",
+        "es": "Los números de las estaciones de GIOŚ que desea leer, separados por comas (10 como máximo). El botón «Buscar una estación» más abajo se los da, por nombre o alrededor de una casa."
       },
-      "placeholder": { "en": "e.g. 2.3522", "fr": "ex. 2.3522" },
-      "required": true,
-      "default": 2.3522,
-      "min": -180,
-      "max": 180
-    },
-    {
-      "key": "unit",
-      "type": "select",
-      "label": { "en": "Temperature unit", "fr": "Unité de température" },
+      "placeholder": {
+        "en": "e.g. 530, 401",
+        "fr": "ex. 530, 401",
+        "de": "z. B. 530, 401",
+        "es": "p. ej. 530, 401"
+      },
       "required": false,
-      "default": "celsius",
+      "default": ""
+    },
+    {
+      "key": "refresh_minutes",
+      "type": "select",
+      "label": {
+        "en": "Refresh",
+        "fr": "Relevé",
+        "de": "Abruf",
+        "es": "Lectura"
+      },
+      "description": {
+        "en": "GIOŚ publishes hourly averages, a little after each hour.",
+        "fr": "Le GIOŚ publie des moyennes horaires, un peu après chaque heure.",
+        "de": "GIOŚ veröffentlicht Stundenmittel, kurz nach jeder vollen Stunde.",
+        "es": "GIOŚ publica medias horarias, poco después de cada hora."
+      },
+      "required": false,
+      "default": "30",
       "options": [
-        { "value": "celsius", "label": { "en": "Celsius", "fr": "Celsius" } },
-        { "value": "fahrenheit", "label": { "en": "Fahrenheit", "fr": "Fahrenheit" } }
+        {
+          "value": "30",
+          "label": {
+            "en": "Every 30 minutes",
+            "fr": "Toutes les 30 minutes",
+            "de": "Alle 30 Minuten",
+            "es": "Cada 30 minutos"
+          }
+        },
+        {
+          "value": "60",
+          "label": {
+            "en": "Every hour",
+            "fr": "Toutes les heures",
+            "de": "Jede Stunde",
+            "es": "Cada hora"
+          }
+        }
       ]
     },
     {
-      "key": "poll_frequency",
-      "type": "number",
-      "label": { "en": "Refresh interval (s)", "fr": "Intervalle de rafraîchissement (s)" },
+      "key": "language",
+      "type": "select",
+      "label": {
+        "en": "Language",
+        "fr": "Langue",
+        "de": "Sprache",
+        "es": "Idioma"
+      },
       "description": {
-        "en": "How often sensors are polled, in seconds (one minute minimum).",
-        "fr": "Fréquence d'interrogation des capteurs, en secondes (une minute minimum)."
+        "en": "Language of the feature names (set when a device is added) and of the scene texts.",
+        "fr": "Langue des noms de fonctionnalités (fixés à l'ajout d'un appareil) et des textes de scène.",
+        "de": "Sprache der Funktionsnamen (beim Hinzufügen eines Geräts festgelegt) und der Szenentexte.",
+        "es": "Idioma de los nombres de las funciones (fijados al añadir un dispositivo) y de los textos de escena."
       },
       "required": false,
-      "default": 300,
-      "min": 60,
-      "max": 3600
+      "default": "fr",
+      "options": [
+        {
+          "value": "en",
+          "label": {
+            "en": "English",
+            "fr": "Anglais",
+            "de": "Englisch",
+            "es": "Inglés"
+          }
+        },
+        {
+          "value": "fr",
+          "label": {
+            "en": "French",
+            "fr": "Français",
+            "de": "Französisch",
+            "es": "Francés"
+          }
+        },
+        {
+          "value": "de",
+          "label": {
+            "en": "German",
+            "fr": "Allemand",
+            "de": "Deutsch",
+            "es": "Alemán"
+          }
+        },
+        {
+          "value": "es",
+          "label": {
+            "en": "Spanish",
+            "fr": "Espagnol",
+            "de": "Spanisch",
+            "es": "Español"
+          }
+        }
+      ]
     }
   ],
   "actions": [
     {
-      "key": "test_weather",
-      "label": { "en": "Test the weather provider", "fr": "Tester le fournisseur météo" },
-      "timeout_seconds": 30
-    },
-    {
-      "key": "identify",
-      "label": { "en": "Identify a device", "fr": "Identifier un appareil" },
+      "key": "find_station",
+      "label": {
+        "en": "Find a station",
+        "fr": "Trouver une station",
+        "de": "Station finden",
+        "es": "Buscar una estación"
+      },
+      "timeout_seconds": 30,
       "fields": [
         {
-          "key": "device",
+          "key": "query",
+          "type": "string",
+          "label": {
+            "en": "Name or city",
+            "fr": "Nom ou ville",
+            "de": "Name oder Stadt",
+            "es": "Nombre o ciudad"
+          },
+          "description": {
+            "en": "Accents are optional. Empty: the stations nearest to the house.",
+            "fr": "Les accents sont facultatifs. Vide : les stations les plus proches de la maison.",
+            "de": "Akzente sind optional. Leer: die Stationen, die dem Haus am nächsten sind.",
+            "es": "Los acentos son opcionales. Vacío: las estaciones más cercanas a la casa."
+          },
+          "placeholder": {
+            "en": "e.g. Kraków",
+            "fr": "ex. Kraków",
+            "de": "z. B. Kraków",
+            "es": "p. ej. Kraków"
+          },
+          "required": false
+        },
+        {
+          "key": "house",
           "type": "select",
-          "source": "devices",
-          "label": { "en": "Device", "fr": "Appareil" },
-          "required": true
+          "source": "houses",
+          "label": {
+            "en": "House",
+            "fr": "Maison",
+            "de": "Haus",
+            "es": "Casa"
+          },
+          "description": {
+            "en": "Sorts by distance. Its location is set in Settings → Houses. Empty: the first located house when no name is typed.",
+            "fr": "Trie par distance. Sa position se règle dans Paramètres → Maisons. Vide : la première maison située si aucun nom n'est saisi.",
+            "de": "Sortiert nach Entfernung. Sein Standort wird unter Einstellungen → Zuhause festgelegt. Leer: das erste Haus mit Standort, wenn kein Name eingegeben ist.",
+            "es": "Ordena por distancia. Su ubicación se define en Configuración → Viviendas. Vacío: la primera casa con ubicación si no escribe ningún nombre."
+          },
+          "required": false
         }
       ]
+    },
+    {
+      "key": "check_stations",
+      "label": {
+        "en": "Check the stations",
+        "fr": "Vérifier les stations",
+        "de": "Stationen prüfen",
+        "es": "Comprobar las estaciones"
+      },
+      "timeout_seconds": 120
     }
   ],
   "scene_triggers": [
     {
-      "key": "motion_detected",
-      "label": { "en": "Motion detected", "fr": "Mouvement détecté" },
+      "key": "air_quality_degraded",
+      "label": {
+        "en": "GIOŚ: air quality degraded",
+        "fr": "GIOŚ : qualité de l'air dégradée",
+        "de": "GIOŚ: Luftqualität verschlechtert",
+        "es": "GIOŚ: calidad del aire degradada"
+      },
       "description": {
-        "en": "A demo motion sensor saw a person or an animal move.",
-        "fr": "Un détecteur de démonstration a vu bouger une personne ou un animal."
+        "en": "The index of a station rises to \"Moderate\" or worse, or gets worse again.",
+        "fr": "L'indice d'une station passe à « Modéré » ou pire, ou s'aggrave encore.",
+        "de": "Der Index einer Station steigt auf „Mäßig“ oder schlechter, oder verschlechtert sich weiter.",
+        "es": "El índice de una estación sube a «Moderada» o peor, o empeora de nuevo."
       },
       "fields": [
         {
-          "key": "device",
+          "key": "station",
           "type": "select",
           "source": "devices",
-          "label": { "en": "Sensor", "fr": "Détecteur" }
+          "label": {
+            "en": "Station",
+            "fr": "Station",
+            "de": "Station",
+            "es": "Estación"
+          },
+          "description": {
+            "en": "Empty: any station.",
+            "fr": "Vide : toutes les stations.",
+            "de": "Leer: jede Station.",
+            "es": "Vacío: cualquier estación."
+          },
+          "required": false
         },
         {
-          "key": "target",
+          "key": "level",
           "type": "multi_select",
-          "label": { "en": "What moved", "fr": "Ce qui a bougé" },
+          "label": {
+            "en": "New level",
+            "fr": "Nouveau niveau",
+            "de": "Neue Stufe",
+            "es": "Nuevo nivel"
+          },
+          "description": {
+            "en": "Tick the levels from your threshold up. Empty: any.",
+            "fr": "Cochez les niveaux à partir de votre seuil. Vide : tous.",
+            "de": "Wähle die Stufen ab deiner Schwelle. Leer: alle.",
+            "es": "Marque los niveles a partir de su umbral. Vacío: todos."
+          },
           "options": [
-            { "value": "person", "label": { "en": "Person", "fr": "Personne" } },
-            { "value": "animal", "label": { "en": "Animal", "fr": "Animal" } }
+            {
+              "value": "moderate",
+              "label": {
+                "en": "Moderate",
+                "fr": "Modéré",
+                "de": "Mäßig",
+                "es": "Moderada"
+              }
+            },
+            {
+              "value": "sufficient",
+              "label": {
+                "en": "Sufficient",
+                "fr": "Passable",
+                "de": "Ausreichend",
+                "es": "Suficiente"
+              }
+            },
+            {
+              "value": "bad",
+              "label": {
+                "en": "Bad",
+                "fr": "Mauvais",
+                "de": "Schlecht",
+                "es": "Mala"
+              }
+            },
+            {
+              "value": "very_bad",
+              "label": {
+                "en": "Very bad",
+                "fr": "Très mauvais",
+                "de": "Sehr schlecht",
+                "es": "Muy mala"
+              }
+            }
           ]
         }
       ],
       "variables": [
         {
-          "key": "target",
+          "key": "station_name",
           "type": "string",
-          "label": { "en": "What moved", "fr": "Ce qui a bougé" }
+          "label": {
+            "en": "Station name",
+            "fr": "Nom de la station",
+            "de": "Name der Station",
+            "es": "Nombre de la estación"
+          }
+        },
+        {
+          "key": "level",
+          "type": "string",
+          "label": {
+            "en": "Level (key)",
+            "fr": "Niveau (clé)",
+            "de": "Stufe (Schlüssel)",
+            "es": "Nivel (clave)"
+          }
+        },
+        {
+          "key": "level_label",
+          "type": "string",
+          "label": {
+            "en": "Level",
+            "fr": "Niveau",
+            "de": "Stufe",
+            "es": "Nivel"
+          }
+        },
+        {
+          "key": "level_index",
+          "type": "number",
+          "label": {
+            "en": "Index, 0 to 5",
+            "fr": "Indice, de 0 à 5",
+            "de": "Index, 0 bis 5",
+            "es": "Índice, de 0 a 5"
+          }
+        },
+        {
+          "key": "previous_level_index",
+          "type": "number",
+          "label": {
+            "en": "Previous index, 0 to 5",
+            "fr": "Indice précédent, de 0 à 5",
+            "de": "Vorheriger Index, 0 bis 5",
+            "es": "Índice anterior, de 0 a 5"
+          }
+        },
+        {
+          "key": "pollutant",
+          "type": "string",
+          "label": {
+            "en": "Pollutant setting the level",
+            "fr": "Polluant qui fixe le niveau",
+            "de": "Schadstoff, der die Stufe bestimmt",
+            "es": "Contaminante que fija el nivel"
+          }
+        },
+        {
+          "key": "summary",
+          "type": "string",
+          "label": {
+            "en": "Summary",
+            "fr": "Résumé",
+            "de": "Zusammenfassung",
+            "es": "Resumen"
+          }
+        }
+      ]
+    },
+    {
+      "key": "air_quality_back_to_normal",
+      "label": {
+        "en": "GIOŚ: air quality back to normal",
+        "fr": "GIOŚ : retour à la normale",
+        "de": "GIOŚ: Luftqualität wieder normal",
+        "es": "GIOŚ: calidad del aire normal de nuevo"
+      },
+      "description": {
+        "en": "The index of a station comes back to \"Good\" or \"Very good\" after a degradation.",
+        "fr": "L'indice d'une station revient à « Bon » ou « Très bon » après une dégradation.",
+        "de": "Der Index einer Station kehrt nach einer Verschlechterung zu „Gut“ oder „Sehr gut“ zurück.",
+        "es": "El índice de una estación vuelve a «Buena» o «Muy buena» tras una degradación."
+      },
+      "fields": [
+        {
+          "key": "station",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Station",
+            "fr": "Station",
+            "de": "Station",
+            "es": "Estación"
+          },
+          "description": {
+            "en": "Empty: any station.",
+            "fr": "Vide : toutes les stations.",
+            "de": "Leer: jede Station.",
+            "es": "Vacío: cualquier estación."
+          },
+          "required": false
+        },
+        {
+          "key": "worst_level",
+          "type": "multi_select",
+          "label": {
+            "en": "After a degradation to",
+            "fr": "Après une dégradation à",
+            "de": "Nach einer Verschlechterung auf",
+            "es": "Tras una degradación a"
+          },
+          "description": {
+            "en": "The worst level reached. Tick the levels from your threshold up. Empty: any.",
+            "fr": "Le pire niveau atteint. Cochez les niveaux à partir de votre seuil. Vide : tous.",
+            "de": "Die schlechteste erreichte Stufe. Wähle die Stufen ab deiner Schwelle. Leer: alle.",
+            "es": "El peor nivel alcanzado. Marque los niveles a partir de su umbral. Vacío: todos."
+          },
+          "options": [
+            {
+              "value": "moderate",
+              "label": {
+                "en": "Moderate",
+                "fr": "Modéré",
+                "de": "Mäßig",
+                "es": "Moderada"
+              }
+            },
+            {
+              "value": "sufficient",
+              "label": {
+                "en": "Sufficient",
+                "fr": "Passable",
+                "de": "Ausreichend",
+                "es": "Suficiente"
+              }
+            },
+            {
+              "value": "bad",
+              "label": {
+                "en": "Bad",
+                "fr": "Mauvais",
+                "de": "Schlecht",
+                "es": "Mala"
+              }
+            },
+            {
+              "value": "very_bad",
+              "label": {
+                "en": "Very bad",
+                "fr": "Très mauvais",
+                "de": "Sehr schlecht",
+                "es": "Muy mala"
+              }
+            }
+          ]
+        }
+      ],
+      "variables": [
+        {
+          "key": "station_name",
+          "type": "string",
+          "label": {
+            "en": "Station name",
+            "fr": "Nom de la station",
+            "de": "Name der Station",
+            "es": "Nombre de la estación"
+          }
+        },
+        {
+          "key": "level",
+          "type": "string",
+          "label": {
+            "en": "Level (key)",
+            "fr": "Niveau (clé)",
+            "de": "Stufe (Schlüssel)",
+            "es": "Nivel (clave)"
+          }
+        },
+        {
+          "key": "level_label",
+          "type": "string",
+          "label": {
+            "en": "Level",
+            "fr": "Niveau",
+            "de": "Stufe",
+            "es": "Nivel"
+          }
+        },
+        {
+          "key": "level_index",
+          "type": "number",
+          "label": {
+            "en": "Index, 0 to 5",
+            "fr": "Indice, de 0 à 5",
+            "de": "Index, 0 bis 5",
+            "es": "Índice, de 0 a 5"
+          }
+        },
+        {
+          "key": "worst_level",
+          "type": "string",
+          "label": {
+            "en": "Worst level (key)",
+            "fr": "Pire niveau (clé)",
+            "de": "Schlechteste Stufe (Schlüssel)",
+            "es": "Peor nivel (clave)"
+          }
+        },
+        {
+          "key": "worst_level_label",
+          "type": "string",
+          "label": {
+            "en": "Worst level",
+            "fr": "Pire niveau",
+            "de": "Schlechteste Stufe",
+            "es": "Peor nivel"
+          }
+        },
+        {
+          "key": "worst_level_index",
+          "type": "number",
+          "label": {
+            "en": "Worst index, 0 to 5",
+            "fr": "Pire indice, de 0 à 5",
+            "de": "Schlechtester Index, 0 bis 5",
+            "es": "Peor índice, de 0 a 5"
+          }
+        },
+        {
+          "key": "summary",
+          "type": "string",
+          "label": {
+            "en": "Summary",
+            "fr": "Résumé",
+            "de": "Zusammenfassung",
+            "es": "Resumen"
+          }
         }
       ]
     }
   ],
   "scene_actions": [
     {
-      "key": "identify_device",
-      "label": { "en": "Identify a device", "fr": "Identifier un appareil" },
-      "description": {
-        "en": "Make a device signal itself (the demo light blinks).",
-        "fr": "Fait se signaler un appareil (la lampe de démonstration clignote)."
+      "key": "get_air_quality",
+      "label": {
+        "en": "GIOŚ: get the air quality",
+        "fr": "GIOŚ : obtenir la qualité de l'air",
+        "de": "GIOŚ: Luftqualität abrufen",
+        "es": "GIOŚ: obtener la calidad del aire"
       },
-      "timeout_seconds": 15,
+      "description": {
+        "en": "Of one station, or the worst of yours, with a sentence ready for a notification.",
+        "fr": "D'une station, ou la pire des vôtres, avec une phrase prête pour une notification.",
+        "de": "Einer Station oder die schlechteste deiner Stationen, mit einem fertigen Satz für eine Benachrichtigung.",
+        "es": "De una estación, o la peor de las suyas, con una frase lista para una notificación."
+      },
+      "timeout_seconds": 10,
       "fields": [
         {
-          "key": "device",
+          "key": "station",
           "type": "select",
           "source": "devices",
-          "label": { "en": "Device", "fr": "Appareil" },
-          "required": true
+          "label": {
+            "en": "Station",
+            "fr": "Station",
+            "de": "Station",
+            "es": "Estación"
+          },
+          "description": {
+            "en": "Empty: the station with the worst index.",
+            "fr": "Vide : la station dont l'indice est le pire.",
+            "de": "Leer: die Station mit dem schlechtesten Index.",
+            "es": "Vacío: la estación con el peor índice."
+          },
+          "required": false
         }
       ],
       "outputs": [
         {
-          "key": "signalled",
-          "type": "boolean",
-          "label": { "en": "Device signalled", "fr": "Appareil signalé" }
+          "key": "summary",
+          "type": "string",
+          "label": {
+            "en": "Summary",
+            "fr": "Résumé",
+            "de": "Zusammenfassung",
+            "es": "Resumen"
+          }
+        },
+        {
+          "key": "station_name",
+          "type": "string",
+          "label": {
+            "en": "Station name",
+            "fr": "Nom de la station",
+            "de": "Name der Station",
+            "es": "Nombre de la estación"
+          }
+        },
+        {
+          "key": "level_label",
+          "type": "string",
+          "label": {
+            "en": "Level",
+            "fr": "Niveau",
+            "de": "Stufe",
+            "es": "Nivel"
+          }
+        },
+        {
+          "key": "level",
+          "type": "string",
+          "label": {
+            "en": "Level (key)",
+            "fr": "Niveau (clé)",
+            "de": "Stufe (Schlüssel)",
+            "es": "Nivel (clave)"
+          }
+        },
+        {
+          "key": "level_index",
+          "type": "number",
+          "label": {
+            "en": "Index, 0 to 5",
+            "fr": "Indice, de 0 à 5",
+            "de": "Index, 0 bis 5",
+            "es": "Índice, de 0 a 5"
+          }
+        },
+        {
+          "key": "pollutant",
+          "type": "string",
+          "label": {
+            "en": "Pollutant setting the level",
+            "fr": "Polluant qui fixe le niveau",
+            "de": "Schadstoff, der die Stufe bestimmt",
+            "es": "Contaminante que fija el nivel"
+          }
+        },
+        {
+          "key": "pm25",
+          "type": "number",
+          "label": {
+            "en": "PM2.5 (µg/m³)",
+            "fr": "PM2.5 (µg/m³)",
+            "de": "PM2.5 (µg/m³)",
+            "es": "PM2.5 (µg/m³)"
+          }
+        },
+        {
+          "key": "pm10",
+          "type": "number",
+          "label": {
+            "en": "PM10 (µg/m³)",
+            "fr": "PM10 (µg/m³)",
+            "de": "PM10 (µg/m³)",
+            "es": "PM10 (µg/m³)"
+          }
+        },
+        {
+          "key": "no2",
+          "type": "number",
+          "label": {
+            "en": "NO₂ (µg/m³)",
+            "fr": "NO₂ (µg/m³)",
+            "de": "NO₂ (µg/m³)",
+            "es": "NO₂ (µg/m³)"
+          }
+        },
+        {
+          "key": "o3",
+          "type": "number",
+          "label": {
+            "en": "O₃ (µg/m³)",
+            "fr": "O₃ (µg/m³)",
+            "de": "O₃ (µg/m³)",
+            "es": "O₃ (µg/m³)"
+          }
+        },
+        {
+          "key": "age_minutes",
+          "type": "number",
+          "label": {
+            "en": "Measurement age (min)",
+            "fr": "Âge de la mesure (min)",
+            "de": "Alter der Messung (Min.)",
+            "es": "Antigüedad de la medición (min)"
+          }
         }
       ]
     }
   ],
   "widgets": [
     {
-      "key": "demo_status",
-      "label": { "en": "Demo status", "fr": "État de la démo" },
-      "description": {
-        "en": "Live temperature and plug power, plug connection and observed location.",
-        "fr": "Température et puissance en direct, connexion de la prise, position observée."
+      "key": "air_quality",
+      "label": {
+        "en": "GIOŚ air quality",
+        "fr": "Qualité de l'air GIOŚ",
+        "de": "GIOŚ-Luftqualität",
+        "es": "Calidad del aire GIOŚ"
       },
-      "icon": "activity",
-      "action_timeout_seconds": 15
+      "description": {
+        "en": "Polish index of your stations, colored by level, with the main pollutants.",
+        "fr": "Indice polonais de vos stations, coloré selon le niveau, avec les principaux polluants.",
+        "de": "Polnischer Index deiner Stationen, nach Stufe eingefärbt, mit den Hauptschadstoffen.",
+        "es": "Índice polaco de sus estaciones, coloreado según el nivel, con los principales contaminantes."
+      },
+      "icon": "wind",
+      "settings": [
+        {
+          "key": "station",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Station",
+            "fr": "Station",
+            "de": "Station",
+            "es": "Estación"
+          },
+          "description": {
+            "en": "Empty: one row per station.",
+            "fr": "Vide : une ligne par station.",
+            "de": "Leer: eine Zeile pro Station.",
+            "es": "Vacío: una fila por estación."
+          },
+          "required": false
+        }
+      ]
     }
   ]
 }

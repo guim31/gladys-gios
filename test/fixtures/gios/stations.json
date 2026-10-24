@@ -1,0 +1,199 @@
+{
+  "@context": {
+    "Lista stacji pomiarów": {
+      "@id": "https://api.gios.gov.pl/pjp-api/v1/rest/station/findAll"
+    },
+    "links": "https://schema.org/relatedLink",
+    "totalPages": "https://schema.org/numberOfPages"
+  },
+  "Lista stacji pomiarowych": [
+    {
+      "Identyfikator stacji": 11,
+      "Kod stacji": "DsCzerStraza",
+      "Nazwa stacji": "Czerniawa",
+      "WGS84 φ N": "50.912475",
+      "WGS84 λ E": "15.312190",
+      "Identyfikator miasta": 142,
+      "Nazwa miasta": "Czerniawa",
+      "Gmina": "Świeradów-Zdrój",
+      "Powiat": "lubański",
+      "Województwo": "DOLNOŚLĄSKIE",
+      "Ulica": "ul. Strażacka 7"
+    },
+    {
+      "Identyfikator stacji": 16,
+      "Kod stacji": "DsDziePilsud",
+      "Nazwa stacji": "Dzierżoniów, ul. Piłsudskiego",
+      "WGS84 φ N": "50.732817",
+      "WGS84 λ E": "16.648050",
+      "Identyfikator miasta": 198,
+      "Nazwa miasta": "Dzierżoniów",
+      "Gmina": "Dzierżoniów",
+      "Powiat": "dzierżoniowski",
+      "Województwo": "DOLNOŚLĄSKIE",
+      "Ulica": "ul. Piłsudskiego 26"
+    },
+    {
+      "Identyfikator stacji": 400,
+      "Kod stacji": "MpKrakAlKras",
+      "Nazwa stacji": "Kraków, Aleja Krasińskiego",
+      "WGS84 φ N": "50.057678",
+      "WGS84 λ E": "19.926189",
+      "Identyfikator miasta": 415,
+      "Nazwa miasta": "Kraków",
+      "Gmina": "Kraków",
+      "Powiat": "Kraków",
+      "Województwo": "MAŁOPOLSKIE",
+      "Ulica": "Al. Krasińskiego"
+    },
+    {
+      "Identyfikator stacji": 401,
+      "Kod stacji": "MpKrakBujaka",
+      "Nazwa stacji": "Kraków, ul. Bujaka",
+      "WGS84 φ N": "50.010575",
+      "WGS84 λ E": "19.949189",
+      "Identyfikator miasta": 415,
+      "Nazwa miasta": "Kraków",
+      "Gmina": "Kraków",
+      "Powiat": "Kraków",
+      "Województwo": "MAŁOPOLSKIE",
+      "Ulica": "ul. Bujaka"
+    },
+    {
+      "Identyfikator stacji": 402,
+      "Kod stacji": "MpKrakBulwar",
+      "Nazwa stacji": "Kraków, ul. Bulwarowa",
+      "WGS84 φ N": "50.069308",
+      "WGS84 λ E": "20.053492",
+      "Identyfikator miasta": 415,
+      "Nazwa miasta": "Kraków",
+      "Gmina": "Kraków",
+      "Powiat": "Kraków",
+      "Województwo": "MAŁOPOLSKIE",
+      "Ulica": "ul. Bulwarowa"
+    },
+    {
+      "Identyfikator stacji": 530,
+      "Kod stacji": "MzWarAlNiepo",
+      "Nazwa stacji": "Warszawa, Al. Niepodległości",
+      "WGS84 φ N": "52.219298",
+      "WGS84 λ E": "21.004724",
+      "Identyfikator miasta": 1006,
+      "Nazwa miasta": "Warszawa",
+      "Gmina": "Warszawa",
+      "Powiat": "Warszawa",
+      "Województwo": "MAZOWIECKIE",
+      "Ulica": "Al. Niepodległości 227/233"
+    },
+    {
+      "Identyfikator stacji": 532,
+      "Kod stacji": "MzWarAKrzywo",
+      "Nazwa stacji": "Warszawa, ul. Krzywoń",
+      "WGS84 φ N": "52.228649",
+      "WGS84 λ E": "20.917513",
+      "Identyfikator miasta": 1006,
+      "Nazwa miasta": "Warszawa",
+      "Gmina": "Warszawa",
+      "Powiat": "Warszawa",
+      "Województwo": "MAZOWIECKIE",
+      "Ulica": "ul. Anieli Krzywoń"
+    },
+    {
+      "Identyfikator stacji": 552,
+      "Kod stacji": "MzWarKondrat",
+      "Nazwa stacji": "Warszawa, ul. Kondratowicza",
+      "WGS84 φ N": "52.290864",
+      "WGS84 λ E": "21.042458",
+      "Identyfikator miasta": 1006,
+      "Nazwa miasta": "Warszawa",
+      "Gmina": "Warszawa",
+      "Powiat": "Warszawa",
+      "Województwo": "MAZOWIECKIE",
+      "Ulica": "ul. Kondratowicza 8"
+    },
+    {
+      "Identyfikator stacji": 729,
+      "Kod stacji": "PmGdaPowWars",
+      "Nazwa stacji": "Gdańsk, ul. Powstańców Warszawskich",
+      "WGS84 φ N": "54.353196",
+      "WGS84 λ E": "18.635267",
+      "Identyfikator miasta": 218,
+      "Nazwa miasta": "Gdańsk",
+      "Gmina": "Gdańsk",
+      "Powiat": "Gdańsk",
+      "Województwo": "POMORSKIE",
+      "Ulica": "ul. Powstańców Warszawskich"
+    },
+    {
+      "Identyfikator stacji": 736,
+      "Kod stacji": "PmGdaLeczkow",
+      "Nazwa stacji": "Gdańsk, ul. Leczkowa",
+      "WGS84 φ N": "54.380139",
+      "WGS84 λ E": "18.619766",
+      "Identyfikator miasta": 218,
+      "Nazwa miasta": "Gdańsk",
+      "Gmina": "Gdańsk",
+      "Powiat": "Gdańsk",
+      "Województwo": "POMORSKIE",
+      "Ulica": "ul. Leczkowa"
+    },
+    {
+      "Identyfikator stacji": 10123,
+      "Kod stacji": "MpKrakZloRog",
+      "Nazwa stacji": "Kraków, ul. Złoty Róg",
+      "WGS84 φ N": "50.081197",
+      "WGS84 λ E": "19.895358",
+      "Identyfikator miasta": 415,
+      "Nazwa miasta": "Kraków",
+      "Gmina": "Kraków",
+      "Powiat": "Kraków",
+      "Województwo": "MAŁOPOLSKIE",
+      "Ulica": "Złoty Róg"
+    },
+    {
+      "Identyfikator stacji": 16533,
+      "Kod stacji": "MzWarMeteo",
+      "Nazwa stacji": "Warszawa, IMGW",
+      "WGS84 φ N": "52.281304",
+      "WGS84 λ E": "20.963383",
+      "Identyfikator miasta": 1006,
+      "Nazwa miasta": "Warszawa",
+      "Gmina": "Warszawa",
+      "Powiat": "Warszawa",
+      "Województwo": "MAZOWIECKIE",
+      "Ulica": "ul. Podleśna 61"
+    }
+  ],
+  "meta": {
+    "dc:description": "Usługa sieciowa udostępniająca listę funkcjonujących stacji pomiarowych",
+    "sy:updateFrequency": "1",
+    "dc:language": "pol (ISO 639-2 / ISO 639-3)",
+    "schema:contentType": "application/ld+json",
+    "schema:provider": {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Warszawa",
+        "postalCode": "02-362",
+        "streetAddress": "Bitwy Warszawskiej 1920 3"
+      },
+      "email": "api@gios.gov.pl",
+      "name": "Główny Inspektorat Ochrony Środowiska"
+    },
+    "schema:dateModified": "do uzupełnienia po publikacji (ISO 8601)",
+    "dc:title": "Lista stacji pomiarowych",
+    "schema:datePublished": "10.04.2017",
+    "schema:keywords": "powietrze, jakość powietrza, zanieczyszczenie powietrza, stacje pomiarowe, stanowiska pomiarowe, monitoring powietrza, Państwowy Monitoring Środowiska, środowisko, stan środowiska",
+    "sy:updatePeriod": "year",
+    "schema:isPartOf": "Państwowy Monitoring Środowiska, Jakość powietrza"
+  },
+  "links": {
+    "next": "https://api.gios.gov.pl/pjp-api/v1/rest/station/findAll?size=500&page=1&size=500",
+    "last": "https://api.gios.gov.pl/pjp-api/v1/rest/station/findAll?size=500&page=0&size=500",
+    "prev": "https://api.gios.gov.pl/pjp-api/v1/rest/station/findAll?size=500&page=0&size=500",
+    "self": "https://api.gios.gov.pl/pjp-api/v1/rest/station/findAll?size=500&page=0&size=500",
+    "first": "https://api.gios.gov.pl/pjp-api/v1/rest/station/findAll?size=500&page=0&size=500"
+  },
+  "totalPages": 1
+}

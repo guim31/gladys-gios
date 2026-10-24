@@ -1,0 +1,50 @@
+{
+  "@context": {
+    "meta": "https://schema.org/meta",
+    "totalPages": "https://schema.org/totalPages",
+    "links": "https://schema.org/links"
+  },
+  "@context": {
+    "Lista danych pomiarowych": { "@id": "https://api.gios.gov.pl/pjp-api/v1/rest/data/getData" },
+    "links": "https://schema.org/relatedLink",
+    "totalPages": "https://schema.org/numberOfPages"
+  },
+  "Lista danych pomiarowych": [
+    { "Kod stanowiska": "PmGdaLeczkow-NO2-1g", "Data": "2026-10-24 06:00:00", "Wartość": null },
+    { "Kod stanowiska": "PmGdaLeczkow-NO2-1g", "Data": "2026-10-24 05:00:00", "Wartość": 8.8 },
+    { "Kod stanowiska": "PmGdaLeczkow-NO2-1g", "Data": "2026-10-24 04:00:00", "Wartość": 8.5 },
+    { "Kod stanowiska": "PmGdaLeczkow-NO2-1g", "Data": "2026-10-24 03:00:00", "Wartość": 8.2 }
+  ],
+  "meta": {
+    "dc:description": "Usługa sieciowa udostępniająca wyniki jednogodzinnych pomiarów dwutlenku siarki (SO2), dwutlenku azotu (NO2), pyłu PM10, pyłu PM2,5, tlenku węgla (CO), benzenu (C6H6), ozonu (O3), od ostatniego dostępnego wyniku do trzeciej doby wstecz, na podstawie identyfikatora stanowiska pomiarowego. Dane udostępniane są w czasie lokalnym w jednostce μg/m3",
+    "sy:updateFrequency": "1",
+    "dc:language": "pol (ISO 639-2 / ISO 639-3)",
+    "schema:contentType": "application/ld+json",
+    "schema:provider": {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Warszawa",
+        "postalCode": "02-362",
+        "streetAddress": "Bitwy Warszawskiej 1920 3"
+      },
+      "email": "api@gios.gov.pl",
+      "name": "Główny Inspektorat Ochrony Środowiska"
+    },
+    "schema:dateModified": "03.11.2022",
+    "dc:title": "Bieżące dane pomiarowe z wybranego stanowiska",
+    "schema:datePublished": "10.04.2017",
+    "schema:keywords": "dane pomiarowe, wyniki pomiarów, powietrze, jakość powietrza, zanieczyszczenie powietrza, stacje pomiarowe, stanowiska pomiarowe, monitoring powietrza, Państwowy Monitoring Środowiska, środowisko, stan środowiska",
+    "sy:updatePeriod": "hourly",
+    "schema:isPartOf": "Państwowy Monitoring Środowiska, Jakość powietrza"
+  },
+  "links": {
+    "next": "https://api.gios.gov.pl/pjp-api/v1/rest/data/getData/4758?size=4&page=1&size=4",
+    "last": "https://api.gios.gov.pl/pjp-api/v1/rest/data/getData/4758?size=4&page=13&size=4",
+    "prev": "https://api.gios.gov.pl/pjp-api/v1/rest/data/getData/4758?size=4&page=0&size=4",
+    "self": "https://api.gios.gov.pl/pjp-api/v1/rest/data/getData/4758?size=4&page=0&size=4",
+    "first": "https://api.gios.gov.pl/pjp-api/v1/rest/data/getData/4758?size=4&page=0&size=4"
+  },
+  "totalPages": 14
+}

@@ -1,33 +1,48 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { normalizeConfig, DEFAULT_CONFIG } from '../src/config.js';
+import {
+  DEFAULT_CONFIG,
+  MAX_STATIONS,
+  normalizeConfig,
+  parseStationIds,
+  periodMs,
+} from '../src/config.js';
 
-test('normalizeConfig returns the defaults when called with no argument', () => {
-  assert.deepEqual(normalizeConfig(), DEFAULT_CONFIG);
+test('the defaults read nothing, every 30 minutes, in French', () => {
+  const config = normalizeConfig();
+  assert.deepEqual(config.stationIds, []);
+  assert.equal(config.refreshMinutes, 30);
+  assert.equal(config.language, 'fr');
+  assert.equal(DEFAULT_CONFIG.language, 'fr');
 });
 
-test('normalizeConfig keeps user values over the defaults', () => {
-  const config = normalizeConfig({ latitude: 45.5, longitude: -73.6, unit: 'fahrenheit' });
-  assert.equal(config.latitude, 45.5);
-  assert.equal(config.longitude, -73.6);
-  assert.equal(config.unit, 'fahrenheit');
+test('station ids: commas, spaces, semicolons and a "#" in front are accepted', () => {
+  assert.deepEqual(parseStationIds(' 530, #401;530  0736 '), {
+    valid: ['530', '401', '736'],
+    invalid: [],
+  });
+  assert.deepEqual(parseStationIds('530, Kraków, 0, -4, 1.5'), {
+    valid: ['530'],
+    invalid: ['Kraków', '0', '-4', '1.5'],
+  });
+  assert.deepEqual(parseStationIds(''), { valid: [], invalid: [] });
 });
 
-test('normalizeConfig coerces numeric strings coming from a form', () => {
-  const config = normalizeConfig({ latitude: '48.8', longitude: '2.3', poll_frequency: '600' });
-  assert.equal(config.latitude, 48.8);
-  assert.equal(config.longitude, 2.3);
-  assert.equal(config.poll_frequency, 600);
-  assert.equal(typeof config.poll_frequency, 'number');
+test(`at most ${MAX_STATIONS} stations are read, the others are reported`, () => {
+  const ids = Array.from({ length: MAX_STATIONS + 2 }, (_, index) => String(100 + index));
+  const config = normalizeConfig({ stations: ids.join(',') });
+  assert.equal(config.stationIds.length, MAX_STATIONS);
+  assert.deepEqual(config.droppedStationIds, ids.slice(MAX_STATIONS));
 });
 
-test('normalizeConfig falls back to the default for a missing numeric field', () => {
-  const config = normalizeConfig({ unit: 'celsius' });
-  assert.equal(config.poll_frequency, DEFAULT_CONFIG.poll_frequency);
+test('the refresh interval is one of the offered values', () => {
+  assert.equal(normalizeConfig({ refresh_minutes: '60' }).refreshMinutes, 60);
+  assert.equal(normalizeConfig({ refresh_minutes: '5' }).refreshMinutes, 30);
+  assert.equal(normalizeConfig({ refresh_minutes: 'often' }).refreshMinutes, 30);
+  assert.equal(periodMs(normalizeConfig({ refresh_minutes: '60' })), 3_600_000);
 });
 
-test('GLADYS_PREFER_LOCAL defaults to true and only an explicit false disables it', () => {
-  assert.equal(normalizeConfig().GLADYS_PREFER_LOCAL, true);
-  assert.equal(normalizeConfig({ GLADYS_PREFER_LOCAL: true }).GLADYS_PREFER_LOCAL, true);
-  assert.equal(normalizeConfig({ GLADYS_PREFER_LOCAL: false }).GLADYS_PREFER_LOCAL, false);
+test('an unknown language falls back to French', () => {
+  assert.equal(normalizeConfig({ language: 'de' }).language, 'de');
+  assert.equal(normalizeConfig({ language: 'pl' }).language, 'fr');
 });
