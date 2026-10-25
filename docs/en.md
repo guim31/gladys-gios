@@ -23,7 +23,7 @@ Read only: the integration only reads public data.
 
 ## Requirements
 
-- Gladys Assistant 5.2.0 or later.
+- Gladys Assistant 5.3.0 or later.
 - Internet access from Gladys to `api.gios.gov.pl`.
 - To search around your house: its location, in **Settings → Houses**.
 

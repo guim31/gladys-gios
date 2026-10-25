@@ -25,7 +25,7 @@ Lecture seule : l'intégration ne fait que lire des données publiques.
 
 ## Prérequis
 
-- Gladys Assistant 5.2.0 ou plus récent.
+- Gladys Assistant 5.3.0 ou plus récent.
 - Un accès Internet de Gladys vers `api.gios.gov.pl`.
 - Pour chercher autour de votre maison : sa position, dans **Paramètres →
   Maisons**.

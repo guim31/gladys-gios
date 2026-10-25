@@ -10,6 +10,11 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+### Changed
+
+- The store shows the integration to users in Poland only (`countries`), which
+  needs Gladys 5.3.0 or later.
+
 ## [1.0.0] - 2026-10-24
 
 ### Added
