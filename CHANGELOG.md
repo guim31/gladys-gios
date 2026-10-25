@@ -10,6 +10,8 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-10-25
+
 ### Changed
 
 - The store shows the integration to users in Poland only (`countries`), which
@@ -30,5 +32,6 @@ the notes of the version's GitHub Release.
   and "back to normal", scene action "get the air quality".
 - Texts and documentation in English, French, German and Spanish.
 
-[Unreleased]: https://github.com/guim31/gladys-gios/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/guim31/gladys-gios/compare/v1.0.1...HEAD
+[1.0.1]: https://github.com/guim31/gladys-gios/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/guim31/gladys-gios/releases/tag/v1.0.0
