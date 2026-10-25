@@ -38,8 +38,9 @@ the **Documentation** link of the Configuration screen.
 
 ## Requirements
 
-- Gladys Assistant **5.2.0** or later (the station search uses the house
-  picker of 5.2.0; the widget and the scene cards need 5.1).
+- Gladys Assistant **5.3.0** or later (the store shows the integration to
+  users in Poland, a 5.3 field; the station search uses the house picker of
+  5.2.0, the widget and the scene cards need 5.1).
 - Internet access to `api.gios.gov.pl`.
 
 ## Installation
